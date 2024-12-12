@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur avec Explications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 100px;
+            padding: 20px;
+        }
+
+        input {
+            font-size: 18px;
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            font-size: 18px;
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .result {
+            margin: 20px auto;
+            font-size: 20px;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .explanation {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #555;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Résooudre Un Calcul Avec Des Explications</h1>
+        <p>Entrez votre calcul mathématique ci-dessous :</p>
+        <input type="text" id="calculation" placeholder="Exemple : (2+3)*4">
+        <button id="solveBtn">Résoudre</button>
+        <div class="result" id="result"></div>
+        <div class="explanation" id="explanation"></div>
+    </div>
+
+    <script>
+        function parseCalculationSteps(expression) {
+            const steps = [];
+            let currentExpression = expression;
+
+            while (true) {
+                // Gestion des parenthèses
+                const parensMatch = currentExpression.match(/\([^()]+\)/);
+                if (parensMatch) {
+                    const subExpression = parensMatch[0];
+                    const result = eval(subExpression);
+                    steps.push(`Résolution de ${subExpression} = ${result}`);
+                    currentExpression = currentExpression.replace(subExpression, result);
+                    continue;
+                }
+
+                // Gestion des multiplications/divisions
+                const multDivMatch = currentExpression.match(/-?\d+(\.\d+)?\s*([*\/])\s*-?\d+(\.\d+)?/);
+                if (multDivMatch) {
+                    const subExpression = multDivMatch[0];
+                    const result = eval(subExpression);
+                    steps.push(`Résolution de ${subExpression} = ${result}`);
+                    currentExpression = currentExpression.replace(subExpression, result);
+                    continue;
+                }
+
+                // Gestion des additions/soustractions
+                const addSubMatch = currentExpression.match(/-?\d+(\.\d+)?\s*([+-])\s*-?\d+(\.\d+)?/);
+                if (addSubMatch) {
+                    const subExpression = addSubMatch[0];
+                    const result = eval(subExpression);
+                    steps.push(`Résolution de ${subExpression} = ${result}`);
+                    currentExpression = currentExpression.replace(subExpression, result);
+                    continue;
+                }
+
+                break;
+            }
+
+            steps.push(`Résultat final: ${currentExpression}`);
+            return steps;
+        }
+
+        function solveCalculation() {
+            const calculationInput = document.getElementById('calculation').value;
+            const resultElement = document.getElementById('result');
+            const explanationElement = document.getElementById('explanation');
+
+            try {
+                const steps = parseCalculationSteps(calculationInput);
+                const finalResult = eval(calculationInput);
+
+                resultElement.textContent = `Résultat : ${finalResult}`;
+                explanationElement.innerHTML = `<h3>Étapes détaillées :</h3><ul>${steps.map(step => `<li>${step}</li>`).join('')}</ul>`;
+            } catch (error) {
+                resultElement.textContent = 'Erreur : Le calcul saisi est invalide.';
+                explanationElement.textContent = '';
+            }
+        }
+
+        document.getElementById('solveBtn').addEventListener('click', solveCalculation);
+    </script>
+</body>
+</html>
